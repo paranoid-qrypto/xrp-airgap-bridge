@@ -6,7 +6,7 @@ To ensure transparency and allow for independent verification, the exact version
 
 ---
 
-### 1. xrpl.js
+### 1. xrpl-latest-min.js
 
 *   **Version:** `4.3.0`
 *   **Purpose:** The official library for interacting with the XRP Ledger.
