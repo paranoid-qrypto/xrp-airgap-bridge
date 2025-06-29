@@ -104,11 +104,12 @@ To ensure transparency and allow for independent verification, the exact version
 
 ### 3. qrcode-generator
 
-*   **Version:** `1.4.4`
+*   **Version:** `1.0.0`
 *   **Purpose:** QR code generation library used for the "Regenerate QR" feature.
-*   **Source of Truth (NPM):** [https://www.npmjs.com/package/qrcode-generator/v/1.4.4](https://www.npmjs.com/package/qrcode-generator/v/1.4.4)
-*   **Direct Download Link:** [https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js](https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js)
-*   **SHA-256 Hash:** `514f978a588b2eda0f942d8957dbab047c9b7eb68e723118fa2cbab6028d41e4`
+*   **Source of Truth (NPM):** [https://github.com/davidshimjs/qrcodejs](https://github.com/davidshimjs/qrcodejs)
+*   **Direct Download Link:** [https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js](https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js)
+*   **SHA-256 Hash:** `c541ef06327885a8415bca8df6071e14189b4855336def4f36db54bde8484f36`
+
 
 ---
 
