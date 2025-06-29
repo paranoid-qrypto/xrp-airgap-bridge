@@ -86,7 +86,7 @@ This tool is designed to be a secure, self-contained HTML file. The following th
 
 To ensure transparency and allow for independent verification, the exact versions, source links, and SHA-256 file hashes are provided below.
 
-### 1. xrpl.js
+### 1. xrpl-latest-min.js
 
 *   **Version:** `4.3.0`
 *   **Purpose:** The official library for interacting with the XRP Ledger.
