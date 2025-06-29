@@ -106,7 +106,7 @@ To ensure transparency and allow for independent verification, the exact version
 
 *   **Version:** `1.0.0`
 *   **Purpose:** QR code generation library used for the "Regenerate QR" feature.
-*   **Source of Truth (NPM):** [https://github.com/davidshimjs/qrcodejs](https://github.com/davidshimjs/qrcodejs)
+*   **Source of Truth (Github):** [https://github.com/davidshimjs/qrcodejs](https://github.com/davidshimjs/qrcodejs)
 *   **Direct Download Link:** [https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js](https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js)
 *   **SHA-256 Hash:** `c541ef06327885a8415bca8df6071e14189b4855336def4f36db54bde8484f36`
 
