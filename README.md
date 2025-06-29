@@ -21,6 +21,31 @@ This tool was built with a "paranoid" mindset, prioritizing security and transpa
 *   **Works Completely Offline:** The tool is a single HTML file with no external dependencies. You can download it and run it on a completely air-gapped computer to generate QR codes from signed transaction data.
 *   **Fully Auditable:** The entire source code is contained within a single, human-readable file. There are no hidden packages or compiled code. What you see is what you get.
 
+
+## Cross-Platform Compatibility
+
+As a self-contained HTML application, the XRP Airgap Bridge runs on any modern device with a standards-compliant web browser.
+
+*   **Desktop:** Windows, macOS (Intel), macOS (Apple Silicon), Linux
+*   **Android, iPhone, iPad :** Android OS, iOS / iPadOS
+*   **Other devices:** E.g. Chromebook, Raspberry Pi, etc.
+*   **Supported Browsers:** Works on all modern browsers, including Chrome, Firefox, Safari, Edge, and Brave.
+
+### Requirements
+
+*   **JavaScript must be enabled** in your browser for the tool to function.
+*   For QR code scanning features, you must **grant the browser permission** to access your device's camera when prompted.
+
+### Offline Functionality
+
+The `index.html` file along with the libraries from the 'js' folder can be downloaded and run on a completely air-gapped machine. The following features will work perfectly offline:
+
+*   ✅ **Generate QR Code**
+*   ✅ **Regenerate QR Code**
+
+Features that require a connection to the XRP Ledger, such as **Fetch Account Info** and **Submit Signed TX**, will not function offline.
+
+
 ## Key Features
 
 *   **Fetch Account Info:** Safely get your account's current `Sequence` number and a suggested `LastLedgerSequence` from the live network to prepare for an offline transaction.
