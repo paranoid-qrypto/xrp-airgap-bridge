@@ -19,7 +19,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>XRP AIRGAP BRIDGE (Dark Mode)</title>
+<title>BTC AIRGAP BRIDGE (Dark Mode)</title>
 <style>
 :root {
 --dark-bg: #1A1A1A;
@@ -28,11 +28,11 @@
 --text-primary: #E0E0E0;
 --text-secondary: #AAAAAA;
 --text-headings: #FFFFFF;
---accent-gold: #ffd700;
---accent-gold-darker: #998206;
+--accent-gold: #F7931A;
+--accent-gold-darker: #b16a13;
 --accent-green: #50C878;
 --accent-red: #FF6B6B;
---focus-ring-color: rgba(74, 144, 226, 0.3);
+--focus-ring-color: rgba(247, 147, 26, 0.3);
 --code-bg: #222222;
 --code-text: #D0D0D0;
 --disabled-bg: #383838;
@@ -266,7 +266,7 @@ body {
     @keyframes spin {
         0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); }
     }
-    #resAddress, #resCurrentLedger, #resBalance, #resLedgerOffset, #resReservedBalance, #resSpendableBalance { 
+    #resAddress, #resBalance { 
         font-weight: 500; 
         color: var(--text-primary); 
     }
@@ -386,23 +386,43 @@ body {
         border-color: #B07C10;
     }
     .logo {
-    width: 80px; 
-    height: 80px;
-    object-fit: contain;
-    margin: 10px 0; 
-    animation: glow 2.5s ease-in-out infinite alternate;
-}
-@keyframes glow {
-  from {
-    filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.3));
-  }
-  to {
-    filter: drop-shadow(0 0 25px rgba(255, 215, 0, 0.9));
-  }
-}
+        width: 80px; 
+        height: 80px;
+        object-fit: contain;
+        margin: 10px 0; 
+        animation: glow 2.5s ease-in-out infinite alternate;
+    }
+    @keyframes glow {
+      from {
+        filter: drop-shadow(0 0 5px rgba(247, 147, 26, 0.4));
+      }
+      to {
+        filter: drop-shadow(0 0 25px rgba(247, 147, 26, 1));
+      }
+    }
+    .utxo-list {
+        max-height: 250px;
+        overflow-y: auto;
+        background-color: var(--code-bg);
+        border: 1px solid var(--surface-border);
+        border-radius: 6px;
+        padding: 10px;
+        margin-top: 10px;
+    }
+    .utxo-item {
+        border-bottom: 1px dashed var(--surface-border);
+        padding: 8px 5px;
+        font-size: 0.9em;
+    }
+    .utxo-item:last-child {
+        border-bottom: none;
+    }
+    .utxo-item code {
+        font-size: 0.95em;
+        padding: 2px 5px;
+    }
 
 </style>
-<script src="js/xrpl-latest-min.js"></script>
 <script src="js/jsQR.js"></script>
 <script src="js/qrcode.min.js"></script>
 </head>
@@ -415,11 +435,13 @@ body {
     </a>
 </div>
     
-<h1>Paranoid Qrypto: XRP AIRGAP BRIDGE</h1>
+
+
+<h1>Paranoid Qrypto: BTC AIRGAP BRIDGE</h1>
 <div class="tab-navigation">
         <button class="tab-link" data-tab="tabGenQR">Generate QR</button>
         <button class="tab-link" data-tab="Regenerate2TabContent">Regenerate QR</button>
-        <button class="tab-link" data-tab="tabFetchInfo">Fetch Account Info</button>
+        <button class="tab-link" data-tab="tabFetchInfo">Fetch UTXOs & Fees</button>
         <button class="tab-link" data-tab="tabSubmitTx">Submit Signed TX</button>
     </div>
 
@@ -482,41 +504,32 @@ body {
 
     <div id="tabFetchInfo" class="tab-content">
         <div class="section">
-            <h2>Fetch Account Info for Signing</h2>
-             <p class="info-text">Get Sequence & LastLedgerSequence for your air-gapped wallet. <br><b>The network selected here also sets the default for transaction submission.</b></p>
+            <h2>Fetch UTXOs & Fee Rates for Signing</h2>
+             <p class="info-text">Get Unspent Transaction Outputs (UTXOs) and recommended fee rates for your air-gapped wallet. <br><b>The network selected here also sets the default for transaction submission.</b></p>
             <label for="network">Select Network:</label>
             <select id="network">
-                <option value="wss://xrplcluster.com" selected>Mainnet (xrplcluster.com)</option>
-                <option value="wss://s.altnet.rippletest.net:51233">Testnet (s.altnet.rippletest.net)</option>
-                <option value="wss://s.devnet.rippletest.net:51233">Devnet (s.devnet.rippletest.net)</option>
+                <option value="mainnet" selected>Mainnet</option>
+                <option value="testnet">Testnet</option>
             </select>
-            <label for="xrpAddress">XRP Account Address:</label>
-            <input type="text" id="xrpAddress" placeholder="Enter your r... address">
-            <label for="ledgerOffset">Ledger Offset for LastLedgerSequence:</label>
-            <input type="number" id="ledgerOffset" value="50" min="5" max="1000">
-            <span class="time-estimate" id="ledgerOffsetTime"></span>
+            <label for="btcAddress">Bitcoin Account Address:</label>
+            <input type="text" id="btcAddress" placeholder="Enter your bc1... or 1... or 3... address">
             <button id="fetchInfoBtn">Fetch Account Info</button>
             <div class="loader" id="infoLoader"></div>
             <div id="infoResultsDisplay" class="results-box" style="display:none;">
                 <h3>Account Information:</h3>
                 <p><strong>Address:</strong> <span id="resAddress"></span></p>
-                <p><strong>Sequence:</strong> <code id="resSequence" title="Click to copy"></code></p>
-                <p><strong>Validated Ledger:</strong> <span id="resCurrentLedger"></span></p>
-                <p><strong>Ledger Offset:</strong> +<span id="resLedgerOffset"></span></p>
-                <p><strong>Suggested LastLedgerSequence:</strong> <code id="resLastLedger" title="Click to copy"></code></p>
-                <p class="time-estimate">Expires in: ~<strong id="resTimeEstimate"></strong>.</p>
+                <p><strong>Total Balance:</strong> <span id="resBalance"></span></p>
                 
                 <hr style="border-color: var(--surface-border); border-style: dashed; margin: 15px 0;">
-                <h3>Live Network Fees</h3>
-                <p><strong>Reference Fee (use this):</strong> <span id="resBaseFee"></span></p>
-                <p><strong>Open Ledger Fee:</strong> <span id="resOpenLedgerFee"></span></p>
-                <p><strong>Median Fee (recent):</strong> <span id="resMedianFee"></span></p>
+                <h3>Live Network Fee Rates (from mempool.space)</h3>
+                <p><strong>High Priority:</strong> <span id="resFastestFee"></span> sat/vB</p>
+                <p><strong>Medium Priority:</strong> <span id="resHalfHourFee"></span> sat/vB</p>
+                <p><strong>Low Priority:</strong> <span id="resHourFee"></span> sat/vB</p>
+                <p><strong>No Priority:</strong> <span id="resEconomyFee"></span> sat/vB</p>
 
                 <hr style="border-color: var(--surface-border); border-style: dashed; margin: 15px 0;">
-                <h3>Account Balance</h3>
-                <p><strong>Total Balance:</strong> <span id="resBalance"></span> XRP</p>
-                <p><strong>Reserved Balance:</strong> <span id="resReservedBalance"></span> XRP</p>
-                <p><strong>Spendable Balance:</strong> <span id="resSpendableBalance"></span> XRP</p>
+                <h3>Unspent Transaction Outputs (UTXOs)</h3>
+                <div id="resUtxoList" class="utxo-list"></div>
             </div>
             <div id="infoErrorDisplay" class="error-box" style="display:none;"></div>
         </div>
@@ -525,17 +538,16 @@ body {
     <div id="tabSubmitTx" class="tab-content">
         <div class="section">
             <h2>Submit Signed Transaction</h2>
-            <p class="info-text">Paste or scan signed TX blob from your air-gapped wallet. <br><b>Select the appropriate network for submission.</b></p>
+            <p class="info-text">Paste or scan the signed raw transaction hex from your air-gapped wallet. <br><b>Select the appropriate network for submission.</b></p>
             
             <label for="submitNetwork">Select Network for Submission:</label>
             <select id="submitNetwork">
-                <option value="wss://xrplcluster.com">Mainnet (xrplcluster.com)</option>
-                <option value="wss://s.altnet.rippletest.net:51233">Testnet (s.altnet.rippletest.net)</option>
-                <option value="wss://s.devnet.rippletest.net:51233">Devnet (s.devnet.rippletest.net)</option>
+                <option value="mainnet">Mainnet</option>
+                <option value="testnet">Testnet</option>
             </select>
 
-            <label for="tx_blob">Signed Transaction Blob (hex):</label>
-            <textarea id="tx_blob" rows="5" placeholder="Paste signed blob OR scan QR"></textarea>
+            <label for="raw_tx_hex">Signed Raw Transaction (hex):</label>
+            <textarea id="raw_tx_hex" rows="5" placeholder="Paste signed raw transaction hex OR scan QR"></textarea>
             <div class="button-group">
                 <button id="scanTxBlobBtn">Scan Signed TX QR</button>
                 <button id="stopScanTxBlobBtn" class="secondary" style="display:none;">Stop Scanner</button>
@@ -545,25 +557,24 @@ body {
             <div class="loader" id="submitLoader"></div>
             <div id="submitResponseDisplay" class="response-box" style="display:none;">
                 <div id="txSimpleStatus" class="simple-status-box" style="display:none;"></div> 
-                <h3>Submission Response:</h3> <pre id="txResponse"></pre>
+                <h3>Submission Response (Transaction ID):</h3> <pre id="txResponse"></pre>
             </div>
             <div id="submitErrorDisplay" class="error-box" style="display:none;"></div>
         </div>
         
     </div>
 <div style="font-size: 17px; line-height: 1.2; color: var(--text-secondary); text-align: center;">
-    <span>A free utility from <a href="https://paranoidqrypto.com/" target="_blank" style="color: #ffd700;">Paranoid Qrypto™</a></span><br>
+    <span>A free utility from <a href="https://paranoidqrypto.com/" target="_blank" style="color: #F7931A;">Paranoid Qrypto™</a></span><br>
    <br>
-    <span><a href="https://github.com/paranoid-qrypto/xrp-airgap-bridge" target="_blank" style="color: var(--text-secondary);">View on GitHub</a></span><br>
+    <span><a href="https://github.com/paranoid-qrypto/btc-airgap-bridge" target="_blank" style="color: var(--text-secondary);">View on GitHub</a></span><br>
     <span>© 2025 The Paranoid Qrypto Team</span><br>
-    <span>Released under the <a href="https://github.com/paranoid-qrypto/xrp-airgap-bridge/blob/main/LICENSE" target="_blank" style="color: var(--text-secondary);">Apache 2.0 License</a></span><br>
+    <span>Released under the <a href="https://github.com/paranoid-qrypto/btc-airgap-bridge/blob/main/LICENSE" target="_blank" style="color: var(--text-secondary);">Apache 2.0 License</a></span><br>
     <br>
-    <span>Paranoid Qrypto: XRP AIRGAP BRIDGE Version: 1.0.0</span>
+    <span>Paranoid Qrypto: BTC AIRGAP BRIDGE Version: 1.0.0</span>
 </div>
 </div>
 
 <script>
-    const AVG_SECONDS_PER_LEDGER = 4;
     const tabLinks = document.querySelectorAll('.tab-link');
     const tabContents = document.querySelectorAll('.tab-content');
     const qrDataInput = document.getElementById('qrDataInput');
@@ -574,26 +585,19 @@ body {
     const downloadQrBtn = document.getElementById('downloadQrBtn');
     const qrGenerateErrorDisplay = document.getElementById('qrGenerateErrorDisplay');
     const networkSelect = document.getElementById('network');
-    const xrpAddressInput = document.getElementById('xrpAddress');
-    const ledgerOffsetInput = document.getElementById('ledgerOffset');
-    const ledgerOffsetTimeSpan = document.getElementById('ledgerOffsetTime');
+    const btcAddressInput = document.getElementById('btcAddress');
     const fetchInfoBtn = document.getElementById('fetchInfoBtn');
     const infoLoader = document.getElementById('infoLoader');
     const infoResultsDisplay = document.getElementById('infoResultsDisplay');
     const infoErrorDisplay = document.getElementById('infoErrorDisplay');
     const resAddress = document.getElementById('resAddress');
-    const resSequence = document.getElementById('resSequence');
-    const resCurrentLedger = document.getElementById('resCurrentLedger');
-    const resLedgerOffset = document.getElementById('resLedgerOffset');
-    const resLastLedger = document.getElementById('resLastLedger');
-    const resTimeEstimate = document.getElementById('resTimeEstimate');
-    const resBaseFee = document.getElementById('resBaseFee');
-    const resOpenLedgerFee = document.getElementById('resOpenLedgerFee');
-    const resMedianFee = document.getElementById('resMedianFee');
     const resBalance = document.getElementById('resBalance');
-    const resReservedBalance = document.getElementById('resReservedBalance'); 
-    const resSpendableBalance = document.getElementById('resSpendableBalance'); 
-    const txBlobInput = document.getElementById('tx_blob');
+    const resFastestFee = document.getElementById('resFastestFee');
+    const resHalfHourFee = document.getElementById('resHalfHourFee');
+    const resHourFee = document.getElementById('resHourFee');
+    const resEconomyFee = document.getElementById('resEconomyFee');
+    const resUtxoList = document.getElementById('resUtxoList');
+    const rawTxHexInput = document.getElementById('raw_tx_hex');
     const scanTxBlobBtn = document.getElementById('scanTxBlobBtn');
     const stopScanTxBlobBtn = document.getElementById('stopScanTxBlobBtn');
     const qrScannerVideo = document.getElementById('qrScannerVideo');
@@ -608,12 +612,22 @@ body {
     let qrTxScannerStream = null;
     let videoScanCanvas = null; 
 
+    const API_URLS = {
+        mainnet: {
+            blockstream: 'https://blockstream.info/api',
+            mempool: 'https://mempool.space/api'
+        },
+        testnet: {
+            blockstream: 'https://blockstream.info/testnet/api',
+            mempool: 'https://mempool.space/testnet/api'
+        }
+    };
 
-    function _XRPUtil_logToConsole(message) { 
+    function _BTCUtil_logToConsole(message) { 
         console.log("[QRUtil] " + message);
     }
 
-    function _XRPUtil_adjustContrast(originalImageData, contrastValue, debugLogFn = _XRPUtil_logToConsole) {
+    function _BTCUtil_adjustContrast(originalImageData, contrastValue, debugLogFn = _BTCUtil_logToConsole) {
         if (!originalImageData || !originalImageData.data) {
             debugLogFn("adjustContrast: Invalid input imageData.");
             return null;
@@ -628,7 +642,7 @@ body {
         return new ImageData(data, originalImageData.width, originalImageData.height);
     }
 
-    function _XRPUtil_thresholdImageData(originalImageData, thresholdRatio, debugLogFn = _XRPUtil_logToConsole) {
+    function _BTCUtil_thresholdImageData(originalImageData, thresholdRatio, debugLogFn = _BTCUtil_logToConsole) {
         if (!originalImageData || !originalImageData.data) {
             debugLogFn("thresholdImageData: Invalid input imageData.");
             return null;
@@ -643,7 +657,7 @@ body {
         return new ImageData(data, originalImageData.width, originalImageData.height);
     }
     
-    function robustDecodeQRFromImageData(imageData, debugLogFn = _XRPUtil_logToConsole) {
+    function robustDecodeQRFromImageData(imageData, debugLogFn = _BTCUtil_logToConsole) {
         if (typeof jsQR === 'undefined') {
             debugLogFn("jsQR library not loaded. Cannot decode.");
             return null;
@@ -714,7 +728,7 @@ body {
         const thresholds = [0.35, 0.45, 0.55, 0.65];
         for (let threshold of thresholds) {
             debugLogFn(`Applying threshold ratio: ${threshold} to ${workingImageData.width}x${workingImageData.height} image.`);
-            const thresholdedImageData = _XRPUtil_thresholdImageData(workingImageData, threshold, debugLogFn);
+            const thresholdedImageData = _BTCUtil_thresholdImageData(workingImageData, threshold, debugLogFn);
             if (!thresholdedImageData) {
                 debugLogFn(`Thresholding returned null for ratio ${threshold}. Skipping.`);
                 continue;
@@ -730,7 +744,7 @@ body {
         const contrastLevels = [25, 50, 75];
         for (let contrastValue of contrastLevels) {
             debugLogFn(`Adjusting contrast by value: ${contrastValue} on ${workingImageData.width}x${workingImageData.height} image.`);
-            const contrastedData = _XRPUtil_adjustContrast(workingImageData, contrastValue, debugLogFn);
+            const contrastedData = _BTCUtil_adjustContrast(workingImageData, contrastValue, debugLogFn);
              if (!contrastedData) {
                 debugLogFn(`Contrast adjustment returned null for value ${contrastValue}. Skipping.`);
                 continue;
@@ -774,13 +788,6 @@ body {
         });
     });
     
-    function formatTime(totalSeconds) { 
-        if (totalSeconds < 60) return `${totalSeconds} seconds`;
-        const minutes = Math.floor(totalSeconds / 60);
-        const seconds = totalSeconds % 60;
-        if (seconds === 0) return `${minutes} minute${minutes > 1 ? 's' : ''}`;
-        return `${minutes} minute${minutes > 1 ? 's' : ''} and ${seconds} second${seconds > 1 ? 's' : ''}`;
-    }
     function makeCodeElementCopyable(el) {
         if(el) {
             el.addEventListener('click', () => {
@@ -796,7 +803,6 @@ body {
             });
         }
     }
-    makeCodeElementCopyable(resSequence); makeCodeElementCopyable(resLastLedger);
 
     function displayTemporaryMessage(parentElement, message, color = "var(--accent-green)", duration = 3000) {
         const existingMsg = parentElement.querySelector('.temp-message');
@@ -869,14 +875,6 @@ body {
         document.body.appendChild(link); link.click(); document.body.removeChild(link);
     });
     
-    function updateLedgerOffsetTime() {
-        const offset = parseInt(ledgerOffsetInput.value);
-        if (isNaN(offset) || offset < 1) { ledgerOffsetTimeSpan.textContent = '(Invalid offset)'; return; }
-        const estimatedSeconds = offset * AVG_SECONDS_PER_LEDGER;
-        ledgerOffsetTimeSpan.innerHTML = `(+${offset} ledgers ≈ ${formatTime(estimatedSeconds)})`;
-    }
-    updateLedgerOffsetTime(); ledgerOffsetInput.addEventListener('input', updateLedgerOffsetTime);
-    
     if (networkSelect && submitNetworkSelect) {
         networkSelect.addEventListener('change', function() {
             submitNetworkSelect.value = this.value;
@@ -884,106 +882,72 @@ body {
     }
 
     fetchInfoBtn.addEventListener('click', async () => {
-        const account = xrpAddressInput.value.trim();
-        const serverUrl = networkSelect.value; 
-        const ledgerOffset = parseInt(ledgerOffsetInput.value);
+        const account = btcAddressInput.value.trim();
+        const network = networkSelect.value; 
+        const api = API_URLS[network];
+
         infoResultsDisplay.style.display = 'none';
         infoErrorDisplay.style.display = 'none'; infoErrorDisplay.innerHTML = '';
         infoLoader.style.display = 'block'; fetchInfoBtn.disabled = true;
 
-        // MODIFIED: Reset all display fields, including the new detailed fee spans
-        resBaseFee.textContent = "---";
-        resOpenLedgerFee.textContent = "---";
-        resMedianFee.textContent = "---";
-        resBalance.textContent = "---";
-        resReservedBalance.textContent = "---";
-        resSpendableBalance.textContent = "---";
+        if (!account) {
+            showInfoError("Please enter a Bitcoin Address.");
+            infoLoader.style.display = 'none'; fetchInfoBtn.disabled = false; return;
+        }
 
-        if (!window.xrpl || !window.xrpl.isValidAddress(account)) {
-            showInfoError("Invalid XRP Address or xrpl.js not loaded.");
-            infoLoader.style.display = 'none'; fetchInfoBtn.disabled = false; return;
-        }
-        if (isNaN(ledgerOffset) || ledgerOffset < 5 || ledgerOffset > 1000) {
-            showInfoError("Ledger offset must be between 5 and 1000.");
-            infoLoader.style.display = 'none'; fetchInfoBtn.disabled = false; return;
-        }
-        const client = new xrpl.Client(serverUrl);
         try {
-            await client.connect();
-            let accountSequence, balanceDrops, ownerCount = 0, isAccountFound = true;
-            
-            try {
-                const accountInfo = await client.request({ command: "account_info", account: account, ledger_index: "validated" });
-                accountSequence = accountInfo.result.account_data.Sequence;
-                balanceDrops = accountInfo.result.account_data.Balance;
-                ownerCount = accountInfo.result.account_data.OwnerCount || 0;
-            } catch (err) {
-                if (err.data && err.data.error === 'actNotFound') {
-                    accountSequence = 1; 
-                    balanceDrops = "0"; 
-                    ownerCount = 0;
-                    isAccountFound = false;
-                    showInfoError(`<strong>Account Not Found (actNotFound):</strong><br> Account <code>${account}</code> not found. Sequence set to 1 (for new accounts) and Balance to 0.`);
-                } else { throw err; } 
-            }
-            
-            const [serverInfo, feeInfo] = await Promise.all([
-                client.request({ command: "server_info" }),
-                client.request({ command: "fee" })
+            const [utxoResponse, feeResponse] = await Promise.all([
+                fetch(`${api.blockstream}/address/${account}/utxo`),
+                fetch(`${api.mempool}/v1/fees/recommended`)
             ]);
-            
-            const currentLedgerVal = serverInfo.result.info.validated_ledger.seq;
-            const suggestedLastLedgerVal = currentLedgerVal + ledgerOffset;
-            const estimatedSeconds = ledgerOffset * AVG_SECONDS_PER_LEDGER;
-            
-            const reserveBaseXRP = serverInfo.result.info.validated_ledger.reserve_base_xrp;
-            const reserveIncXRP = serverInfo.result.info.validated_ledger.reserve_inc_xrp;
 
-            const reserveBaseDrops = BigInt(xrpl.xrpToDrops(reserveBaseXRP));
-            const reserveIncDrops = BigInt(xrpl.xrpToDrops(reserveIncXRP));
-            const totalBalanceDropsBigInt = BigInt(balanceDrops);
+            if (!utxoResponse.ok) {
+                const errorText = await utxoResponse.text();
+                throw new Error(`Failed to fetch UTXOs: ${errorText}`);
+            }
+            if (!feeResponse.ok) {
+                const errorText = await feeResponse.text();
+                throw new Error(`Failed to fetch fees: ${errorText}`);
+            }
 
-            const totalReservedDrops = reserveBaseDrops + (BigInt(ownerCount) * reserveIncDrops);
-            let spendableBalanceDrops = totalBalanceDropsBigInt - totalReservedDrops;
+            const utxos = await utxoResponse.json();
+            const fees = await feeResponse.json();
 
-            resAddress.textContent = account; 
-            resSequence.textContent = accountSequence;
-            resCurrentLedger.textContent = currentLedgerVal; 
-            resLedgerOffset.textContent = ledgerOffset;
-            resLastLedger.textContent = suggestedLastLedgerVal; 
-            resTimeEstimate.innerHTML = formatTime(estimatedSeconds);
-            
-            const feeDrops = feeInfo.result.drops;
-            resBaseFee.textContent = `${feeDrops.base_fee} drops (${xrpl.dropsToXrp(feeDrops.base_fee)} XRP)`;
-            resOpenLedgerFee.textContent = `${feeDrops.open_ledger_fee} drops (${xrpl.dropsToXrp(feeDrops.open_ledger_fee)} XRP)`;
-            resMedianFee.textContent = `${feeDrops.median_fee} drops (${xrpl.dropsToXrp(feeDrops.median_fee)} XRP)`;
-            
-            if (isAccountFound) {
-                resBalance.textContent = xrpl.dropsToXrp(balanceDrops);
-                resReservedBalance.textContent = xrpl.dropsToXrp(totalReservedDrops.toString());
-                resSpendableBalance.textContent = xrpl.dropsToXrp( (spendableBalanceDrops < 0n ? 0n : spendableBalanceDrops).toString() );
+            let totalBalance = 0;
+            resUtxoList.innerHTML = '';
+
+            if (utxos.length === 0) {
+                resUtxoList.innerHTML = '<p>No unspent outputs (UTXOs) found for this address.</p>';
             } else {
-                resBalance.textContent = "0.00 (Not Activated)";
-                resReservedBalance.textContent = xrpl.dropsToXrp(reserveBaseDrops.toString()) + " (Required for activation)";
-                resSpendableBalance.textContent = "0.00";
+                utxos.forEach(utxo => {
+                    totalBalance += utxo.value;
+                    const utxoDiv = document.createElement('div');
+                    utxoDiv.className = 'utxo-item';
+                    utxoDiv.innerHTML = `
+                        <strong>Value:</strong> ${utxo.value} sats<br>
+                        <strong>TXID:</strong> <code title="Click to copy">${utxo.txid}</code><br>
+                        <strong>Vout:</strong> ${utxo.vout}
+                    `;
+                    resUtxoList.appendChild(utxoDiv);
+                });
             }
             
+            resAddress.textContent = account;
+            resBalance.textContent = `${totalBalance} sats (${(totalBalance / 100000000).toFixed(8)} BTC)`;
+            
+            resFastestFee.textContent = fees.fastestFee;
+            resHalfHourFee.textContent = fees.halfHourFee;
+            resHourFee.textContent = fees.hourFee;
+            resEconomyFee.textContent = fees.economyFee;
+
             infoResultsDisplay.style.display = 'block';
-            if(!isAccountFound) infoErrorDisplay.style.display = 'block'; 
+            // Make new code elements copyable
+            resUtxoList.querySelectorAll('code').forEach(makeCodeElementCopyable);
+
         } catch (error) {
             console.error("Error fetching account info:", error);
-            let msg = "Fetch failed: " + (error.message || "Unknown error");
-            if (error.data && error.data.error_message) msg += ` Server: ${error.data.error_message}`;
-            else if (error.message && error.message.toLowerCase().includes("disconnected")) msg = "Connection failed.";
-            showInfoError(msg);
-            resBaseFee.textContent = "---";
-            resOpenLedgerFee.textContent = "---";
-            resMedianFee.textContent = "---";
-            resBalance.textContent = "---";
-            resReservedBalance.textContent = "---";
-            resSpendableBalance.textContent = "---";
+            showInfoError(`Fetch failed: ${error.message}`);
         } finally {
-            if (client.isConnected()) await client.disconnect();
             infoLoader.style.display = 'none'; fetchInfoBtn.disabled = false;
         }
     });
@@ -1078,7 +1042,7 @@ body {
                 const decodedData = robustDecodeQRFromImageData(imageData, videoScanDebugLog);
 
                 if (decodedData) {
-                    txBlobInput.value = decodedData;
+                    rawTxHexInput.value = decodedData;
                     displayTemporaryMessage(scanTxBlobBtn.parentNode, "Signed TX QR scanned successfully!", "var(--accent-green)");
                     stopTxBlobScanner(); 
                     return; 
@@ -1090,9 +1054,10 @@ body {
         }
     }
     
-    submitTxBtn.addEventListener('click', () => {
-        const tx_blob = txBlobInput.value.trim();
-        const serverUrl = submitNetworkSelect.value; 
+    submitTxBtn.addEventListener('click', async () => {
+        const raw_tx_hex = rawTxHexInput.value.trim();
+        const network = submitNetworkSelect.value;
+        const api = API_URLS[network];
         
         submitResponseDisplay.style.display = 'none'; 
         txResponse.textContent = ''; 
@@ -1103,123 +1068,40 @@ body {
         submitLoader.style.display = 'block'; 
         submitTxBtn.disabled = true;
 
-        if (!tx_blob) {
-            displaySimpleTxStatus('error', 'Error: Transaction blob is empty.');
-            submitLoader.style.display = 'none'; submitTxBtn.disabled = false; return;
-        }
-        if (!serverUrl) {
-            displaySimpleTxStatus('error', 'Error: Network not selected for submission.');
+        if (!raw_tx_hex) {
+            showSubmitError('Error: Signed raw transaction hex is empty.');
             submitLoader.style.display = 'none'; submitTxBtn.disabled = false; return;
         }
         
-        console.log(`[SubmitTX] Attempting to connect to WebSocket: ${serverUrl}`);
-        let ws;
-        try { 
-            ws = new WebSocket(serverUrl); 
-        } catch (e) {
-            console.error("[SubmitTX] WebSocket creation error:", e);
-            displaySimpleTxStatus('error', `Connection Error: ${e.message}`);
-            submitLoader.style.display = 'none'; submitTxBtn.disabled = false; return;
+        try {
+            const res = await fetch(`${api.blockstream}/tx`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'text/plain',
+                },
+                body: raw_tx_hex
+            });
+
+            const responseText = await res.text();
+
+            if (res.ok) {
+                displaySimpleTxStatus('success', 'Transaction submitted successfully!');
+                txResponse.textContent = responseText; // This should be the txid
+            } else {
+                displaySimpleTxStatus('error', `Submission Failed: ${responseText}`);
+                txResponse.textContent = `Error: ${responseText}`;
+            }
+            submitResponseDisplay.style.display = 'block';
+
+        } catch (error) {
+            console.error("Error submitting transaction:", error);
+            displaySimpleTxStatus('error', `Submission Failed: ${error.message}`);
+            txResponse.textContent = `Error: ${error.message}`;
+            submitResponseDisplay.style.display = 'block';
+        } finally {
+            submitLoader.style.display = 'none';
+            submitTxBtn.disabled = false;
         }
-
-        ws.onopen = function() {
-            let hostnameDisplay = serverUrl; 
-            try { const u = new URL(serverUrl); hostnameDisplay = u.hostname; } catch(e){}
-            
-            console.log(`[SubmitTX] WebSocket connected to ${hostnameDisplay}. Submitting transaction...`);
-            txResponse.textContent = `Connecting to ${hostnameDisplay}...\nConnected. Submitting transaction...`;
-            submitResponseDisplay.style.display = 'block'; 
-            submitErrorDisplay.style.display = 'none';   
-            
-            ws.send(JSON.stringify({ command: "submit", tx_blob: tx_blob }));
-        };
-
-        ws.onmessage = function(event) {
-            let hostnameDisplay = serverUrl; 
-            try { const u = new URL(serverUrl); hostnameDisplay = u.hostname; } catch(e){}
-            
-            console.log("[SubmitTX] WebSocket message received:", event.data);
-            let simpleMsg = "Transaction status unknown.";
-            let simpleMsgType = "warning";
-
-            try {
-                const data = JSON.parse(event.data);
-                txResponse.textContent = `Response from ${hostnameDisplay}:\n${JSON.stringify(data, null, 2)}`;
-
-                if (data.error) {
-                    simpleMsgType = 'error';
-                    simpleMsg = `Error: ${data.error_message || data.error}`;
-                } else if (data.result) {
-                    const engineResult = data.result.engine_result;
-                    const engineMessage = data.result.engine_result_message || "No additional message.";
-                    
-                    if (engineResult === 'tesSUCCESS') {
-                        simpleMsgType = 'success';
-                        simpleMsg = `Success: ${engineMessage}`;
-                    } else if (engineResult && engineResult.startsWith('tes')) {
-                        simpleMsgType = 'success';
-                        simpleMsg = `Success (tes*): ${engineMessage} (Code: ${engineResult})`;
-                    } else if (engineResult === 'terQUEUED') {
-                        simpleMsgType = 'warning';
-                        simpleMsg = `Queued: ${engineMessage}. Transaction is in queue, not yet final.`;
-                    } else if (engineResult && (engineResult.startsWith('tec') || engineResult.startsWith('tef') || engineResult.startsWith('tel') || engineResult.startsWith('tem') || engineResult.startsWith('ter'))) {
-                        simpleMsgType = 'error';
-                        simpleMsg = `Failed: ${engineMessage} (Code: ${engineResult})`;
-                    } else if (data.result.accepted === true && data.result.engine_result_code === 0 && engineResult !== 'terQUEUED') { 
-                        simpleMsgType = 'success';
-                        simpleMsg = `Success: Transaction provisionally accepted. ${engineMessage}`;
-                    }
-                     else { 
-                        simpleMsgType = 'warning';
-                        simpleMsg = `Status: ${engineMessage} (Code: ${engineResult || 'N/A'})`;
-                    }
-                } else {
-                    simpleMsgType = 'warning';
-                    simpleMsg = "Received response, but structure was unexpected.";
-                }
-
-            } catch (e) {
-                console.error("[SubmitTX] Error parsing WebSocket message JSON:", e);
-                txResponse.textContent = `Malformed response from ${hostnameDisplay} (not valid JSON):\n${event.data}`;
-                simpleMsgType = 'error';
-                simpleMsg = "Malformed server response (not JSON).";
-            }
-            
-            displaySimpleTxStatus(simpleMsgType, simpleMsg);
-            submitResponseDisplay.style.display = 'block'; 
-            submitLoader.style.display = 'none';
-            submitTxBtn.disabled = false;
-            if (ws.readyState === WebSocket.OPEN) {
-                console.log("[SubmitTX] Closing WebSocket after message processed.");
-                ws.close();
-            }
-        };
-
-        ws.onerror = function(errEvent) {
-            console.error("[SubmitTX] WebSocket error:", errEvent);
-            displaySimpleTxStatus('error', 'Connection Error: WebSocket connection failed. Check console.');
-            txResponse.textContent = 'WebSocket connection error. Could not reach server.'; 
-            submitResponseDisplay.style.display = 'block'; 
-            submitLoader.style.display = 'none';
-            submitTxBtn.disabled = false;
-        };
-
-        ws.onclose = function(event) {
-            console.log(`[SubmitTX] WebSocket closed. Code: ${event.code}, Reason: '${event.reason || "N/A"}', Clean: ${event.wasClean}`);
-            
-            if (submitLoader.style.display === 'block') { 
-                submitLoader.style.display = 'none';
-                submitTxBtn.disabled = false;
-                
-                if (txSimpleStatus.style.display === 'none') {
-                    let closeMessage = `Connection Closed Unexpectedly. Code: ${event.code}.`;
-                    if (event.reason) closeMessage += ` Reason: ${event.reason}`;
-                    displaySimpleTxStatus('error', closeMessage);
-                    txResponse.textContent = closeMessage; 
-                    submitResponseDisplay.style.display = 'block'; 
-                }
-            }
-        };
     });
     
     window.addEventListener('DOMContentLoaded', () => {
