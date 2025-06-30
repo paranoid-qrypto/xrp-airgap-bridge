@@ -36,14 +36,17 @@ As a self-contained HTML application, the XRP Airgap Bridge runs on any modern d
 *   **JavaScript must be enabled** in your browser for the tool to function.
 *   For QR code scanning features, you must **grant the browser permission** to access your device's camera when prompted.
 
-### Offline Functionality
+### Online & Offline Capabilities
 
-The `index.html` file along with the libraries from the 'js' folder can be downloaded and run on a completely air-gapped machine. The following features will work perfectly offline:
+The `index.html` file and its local `js` folder are designed to be fully portable. You can download the repository and run the tool on a completely air-gapped machine for maximum security.
 
+**Functions available OFFLINE:**
 *   ✅ **Generate QR Code**
 *   ✅ **Regenerate QR Code**
 
-Features that require a connection to the XRP Ledger, such as **Fetch Account Info** and **Submit Signed TX**, will not function offline.
+**Functions that require an INTERNET connection:**
+*   ❌ **Fetch Account Info**
+*   ❌ **Submit Signed TX**
 
 
 ## Key Features
@@ -104,12 +107,11 @@ To ensure transparency and allow for independent verification, the exact version
 
 ### 3. qrcode-generator
 
-*   **Version:** `1.0.0`
-*   **Purpose:** QR code generation library used for the "Regenerate QR" feature.
-*   **Source of Truth (Github):** [https://github.com/davidshimjs/qrcodejs](https://github.com/davidshimjs/qrcodejs)
-*   **Direct Download Link:** [https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js](https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js)
-*   **SHA-256 Hash:** `c541ef06327885a8415bca8df6071e14189b4855336def4f36db54bde8484f36`
-
+*   **Version:** `1.4.4`
+*   **Purpose:** A robust library for generating QR codes. Used for all QR creation features in the application ("Generate QR" and "Regenerate QR").
+*   **Source of Truth (NPM):** [https://www.npmjs.com/package/qrcode-generator/v/1.4.4](https://www.npmjs.com/package/qrcode-generator/v/1.4.4)
+*   **Direct Download Link:** [https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js](https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js)
+*   **SHA-256 Hash:** `514f978a588b2eda0f942d8957dbab047c9b7eb68e723118fa2cbab6028d41e4`
 
 ---
 
@@ -124,3 +126,8 @@ This tool is provided "AS IS", WITHOUT WARRANTY OF ANY KIND, either express or i
 ## Bug Reports & Feedback
 
 If you find a bug or have a feature request, please open an issue on the [GitHub Issues page](https://github.com/paranoid-qrypto/xrp-airgap-bridge/issues).
+
+## Developed and provided by Paranoid Qrypto
+
+[https://paranoidqrypto.com/](https://paranoidqrypto.com)
+2025
