@@ -95,7 +95,7 @@ To ensure transparency and allow for independent verification, the exact version
 *   **Purpose:** The official library for interacting with the XRP Ledger.
 *   **Source of Truth (NPM):** [https://www.npmjs.com/package/xrpl/v/4.3.0](https://www.npmjs.com/package/xrpl/v/4.3.0)
 *   **Direct Download Link:** [https://cdn.jsdelivr.net/npm/xrpl@4.3.0/build/xrpl-latest-min.js](https://cdn.jsdelivr.net/npm/xrpl@4.3.0/build/xrpl-latest-min.js)
-*   **SHA-256 Hash:** `d4814cdd1fe22421169c51dbdf2dadc84f48d0fc0dba96bb49e1e1d10158c642`
+*   **SHA-256 Hash:** `8cb7b4fbb5097a522ae5062af2daa1e50cb7392cb69b7f044d653ea7a8ff732f`
 
 ### 2. jsQR.js
 
